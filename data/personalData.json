@@ -1,0 +1,19 @@
+[
+    [
+      {
+        "Flagged": true,
+        "type": "checkbox",
+        "Title": "Grocery's",
+        "percent": 0,
+        "data": [
+          ["nil", "Grocery's", ["Oil - 1/2litre", "Unity Rice - 1kg", "Curd - 1/2litre", "Biryani Masala - 50g"], [false, false, false, false]],
+          ["nil", "Vegetables", ["Onion - 1kg", "Tomato - 1kg", "Brinjal - 1/2kg", "Potato - 1/2kg"], [false, false, false, false]],
+          ["nil", "Meats", ["Egg - 10no", "Chicken - 1kg"], [false, false]]
+        ],
+        "Date": "2024-10-11",
+        "noChildCheck": [],
+        "childAdded": true
+      }
+    ]
+  ]
+  

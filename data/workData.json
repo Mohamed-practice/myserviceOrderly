@@ -1,0 +1,63 @@
+[
+  [
+    {
+      "Flagged": false,
+      "type": "checkbox",
+      "Title": "Project",
+      "percent": 0,
+      "data": [
+        [
+          "nil",
+          "Planning Phase",
+          [
+            "Define Project Scope",
+            "Gather Requirements",
+            "Identify Stakeholders",
+            "Develop Project Timeline"
+          ],
+          [
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        [
+          "nil",
+          "Development Phase",
+          [
+            "Create Development Environment",
+            "Code Implementation",
+            "Testing and Debugging",
+            "Integration Testing"
+          ],
+          [
+            false,
+            false,
+            false,
+            false
+          ]
+        ],
+        [
+          "nil",
+          "Deployment & Review",
+          [
+            "Deploy to Production",
+            "Conduct User Training",
+            "Gather User Feedback",
+            "Post-Deployment Review"
+          ],
+          [
+            false,
+            false,
+            false,
+            false
+          ]
+        ]
+      ],
+      "Date": "2024-10-10",
+      "noChildCheck": [],
+      "childAdded": true
+    }
+  ]
+]
