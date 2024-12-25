@@ -1,4 +1,6 @@
 const express = require('express');
+const { execSync } = require('child_process');
+
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
@@ -6,7 +8,43 @@ const fs = require('fs');
 const app = express();
 const port = 4500;
 
-// Middleware to allow all origins and preflight requests
+// GitHub configuration
+const GITHUB_TOKEN = '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';
+
+//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
+
+function commitAndPush() {
+  const timestamp = new Date().toISOString();
+  
+  try {
+    // Initialize git if not already initialized
+    execSync('git init');
+    
+    // Configure git user info (required for commits)
+    execSync('git config --global user.email "mohammedimrancr7@gmail.com"');
+    execSync('git config --global user.name "Mohamed-practice"');
+    
+    // Configure remote with token
+    execSync(`git remote remove origin || true`);
+    execSync(`git remote add origin https://${GITHUB_TOKEN}@github.com/Mohamed-practice/myserviceOrderly.git`);
+    
+    // Create and checkout main branch if it doesn't exist
+    execSync('git checkout main || git checkout -b main');
+    
+    // Stage and commit changes - using specific paths
+    execSync('git add "./data/*"');
+    execSync('git add "./server.js"');
+    execSync('git add "./package.json"');
+    execSync('git commit -m "Data update: ' + timestamp + '"');
+    
+    // Push changes
+    execSync('git push -u origin main --force');
+    
+    console.log('Successfully pushed data changes to GitHub');
+  } catch (error) {
+    console.error('Error details:', error.stdout?.toString(), error.stderr?.toString());
+  }
+}
 
 // Middleware to allow all origins and preflight requests
 app.use((req, res, next) => {
@@ -31,6 +69,7 @@ const allowedOrigins = [
   'http://localhost',
   'http://localhost:8080',
   'http://localhost:8100',
+  "https://myipl2024.pages.dev"
 ];
 
 // Reflect the origin if it's in the allowed list or not defined (cURL, Postman, etc.)
@@ -55,10 +94,27 @@ let personalData = require('./data/personalData.json');
 
 // Function to save data back to JSON files
 const saveWorkData = () => {
-  fs.writeFileSync(
-    require('path').join(__dirname, 'data/workData.json'),
-    JSON.stringify(workData, null, 2)
-  );
+  try{
+    fs.writeFileSync(
+      require('path').join(__dirname, 'data/workData.json'),
+      JSON.stringify(workData, null, 2)
+    );
+  }catch(error){
+    console.error('Error saving data:', error);
+  }
+
+};
+
+const savePesonalData = () => {
+  try{
+    fs.writeFileSync(
+      require('path').join(__dirname, 'data/personalData.json'),
+      JSON.stringify(personalData, null, 2)
+    );
+  }catch(error){
+    console.error('Error saving data:', error);
+  }
+
 };
 
 // Get routes
@@ -81,13 +137,18 @@ app.post('/api/workdata', cors(corsOptions),(req, res) => {
 app.post('/api/personaldata',cors(corsOptions), (req, res) => {
   const newData = req.body;
   personalData.push(newData);
-  saveWorkData();
+  savePesonalData();
   res.status(201).send({ message: 'Personal data added successfully', data: newData });
 });
 
 // Delete routes
 app.delete('/api/workdata/:index', cors(corsOptions),(req, res) => {
-  const index = parseInt(req.params.index, 10); // Parse the index from URL
+  const index = parseInt(req.params.index, 10);
+  if(index === 999)
+  {
+    commitAndPush();
+    return;
+  }
   if (index >= 0 && index < workData.length) {
     const deletedItem = workData.splice(index, 1); // Remove the item by index
     saveWorkData();
@@ -101,7 +162,7 @@ app.delete('/api/personaldata/:index',cors(corsOptions), (req, res) => {
   const index = parseInt(req.params.index, 10); // Parse the index from URL
   if (index >= 0 && index < personalData.length) {
     const deletedItem = personalData.splice(index, 1); // Remove the item by index
-    saveWorkData();
+    savePesonalData();
     res.status(200).send({ message: 'Personal data removed successfully', data: deletedItem });
   } else {
     res.status(404).send({ message: 'Personal data not found at the provided index' });
