@@ -9,42 +9,40 @@ const app = express();
 const port = 4500;
 
 // GitHub configuration
-const GITHUB_TOKEN = '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';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 //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
 
 function commitAndPush() {
   const timestamp = new Date().toISOString();
-  
+
   try {
     // Initialize git if not already initialized
     execSync('git init');
-    
-    // Configure git user info (required for commits)
-    execSync('git config --global user.email "mohammedimrancr7@gmail.com"');
-    execSync('git config --global user.name "Mohamed-practice"');
-    
-    // Configure remote with token
-    execSync(`git remote remove origin || true`);
-    execSync(`git remote add origin https://${GITHUB_TOKEN}@github.com/Mohamed-practice/myserviceOrderly.git`);
-    
+
+    // Configure git user info (required for commits if not already configured)
+    execSync('git config user.email "mohammedimrancr7@gmail.com"');
+    execSync('git config user.name "Mohamed-practice"');
+
     // Create and checkout main branch if it doesn't exist
     execSync('git checkout main || git checkout -b main');
-    
+
     // Stage and commit changes - using specific paths
     execSync('git add "./data/*"');
     execSync('git add "./server.js"');
     execSync('git add "./package.json"');
     execSync('git commit -m "Data update: ' + timestamp + '"');
-    
-    // Push changes
-    execSync('git push -u origin main --force');
-    
+
+    // Push changes (assumes a remote is already configured)
+    execSync('git push -u origin main');
+
     console.log('Successfully pushed data changes to GitHub');
   } catch (error) {
     console.error('Error details:', error.stdout?.toString(), error.stderr?.toString());
   }
 }
+
+
 
 // Middleware to allow all origins and preflight requests
 app.use((req, res, next) => {
@@ -169,6 +167,45 @@ app.delete('/api/personaldata/:index',cors(corsOptions), (req, res) => {
   }
 });
 
+// Put routes for updating existing data
+app.put('/api/workdata/:index', cors(corsOptions), (req, res) => {
+  const index = parseInt(req.params.index, 10);
+  const updatedData = req.body;
+  
+  if (index >= 0 && index < workData.length) {
+    workData[index] = updatedData;
+    saveWorkData();
+    res.status(200).send({ 
+      message: 'Work data updated successfully', 
+      data: updatedData 
+    });
+  } else {
+    res.status(404).send({ 
+      message: 'Work data not found at the provided index' 
+    });
+  }
+});
+
+app.put('/api/personaldata/:index', cors(corsOptions), (req, res) => {
+  const index = parseInt(req.params.index, 10);
+  const updatedData = req.body;
+  
+  if (index >= 0 && index < personalData.length) {
+    personalData[index] = updatedData;
+    savePesonalData();
+    res.status(200).send({ 
+      message: 'Personal data updated successfully', 
+      data: updatedData 
+    });
+  } else {
+    res.status(404).send({ 
+      message: 'Personal data not found at the provided index' 
+    });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
+
